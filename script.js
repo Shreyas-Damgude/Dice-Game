@@ -8,6 +8,8 @@ let activePlayer = 0;
 //Selecting Elements
 const current0 = document.getElementById('current--0');
 const current1 = document.getElementById('current--1');
+const player0 = document.querySelector('.player--0');
+const player1 = document.querySelector('.player--1');
 const newGame = document.querySelector('.btn--new');
 const score0 = document.getElementById('score--0');
 const score1 = document.getElementById('score--1');
@@ -16,8 +18,6 @@ const hold = document.querySelector('.btn--hold');
 const name0 = document.querySelector('#name--0');
 const name1 = document.querySelector('#name--1');
 const diceImg = document.querySelector('.dice');
-const player0 = document.querySelector('.player--0');
-const player1 = document.querySelector('.player--1');
 
 //Entering Names
 let playerName0 = prompt('Enter player 1');
@@ -26,7 +26,6 @@ name0.textContent = playerName0;
 name1.textContent = playerName1;
 
 //Initial Conditions
-diceImg.classList.add('hidden');
 score0.textContent = 0;
 score1.textContent = 0;
 let playing = true;
@@ -40,23 +39,21 @@ function winner(activePlayer) {
   playing = false;
 }
 
+const selectElement = text => document.querySelector(text);
+
 //Switching Player
 function switchPlayer() {
-  document
-    .querySelector(`.player--${activePlayer}`)
-    .classList.remove('player--active');
+  selectElement(`.player--${activePlayer}`).classList.remove('player--active');
   currentScore = 0;
-  document.querySelector(`#current--${activePlayer}`).textContent = 0;
-  activePlayer = activePlayer === 0 ? 1 : 0;
-  document
-    .querySelector(`.player--${activePlayer}`)
-    .classList.add('player--active');
+  selectElement(`#current--${activePlayer}`).textContent = 0;
+  activePlayer = activePlayer ? 0 : 1;
+  selectElement(`.player--${activePlayer}`).classList.add('player--active');
 }
 
 //Rolling dice
 roll.addEventListener('click', function () {
   if (playing) {
-    let dice = Math.trunc(Math.random() * 6 + 1);
+    const dice = Math.trunc(Math.random() * 6 + 1);
     diceImg.classList.remove('hidden');
     diceImg.src = `dice-${dice}.png`;
 
@@ -64,8 +61,7 @@ roll.addEventListener('click', function () {
       switchPlayer();
     } else {
       currentScore += dice;
-      document.querySelector(`#current--${activePlayer}`).textContent =
-        currentScore;
+      selectElement(`#current--${activePlayer}`).textContent = currentScore;
     }
   }
 });
@@ -95,35 +91,33 @@ newGame.addEventListener('click', function () {
 //Button Hold
 hold.addEventListener('click', function () {
   if (playing) {
-    document
-      .querySelector(`.player--${activePlayer}`)
-      .classList.remove('player--active');
-
-    document.querySelector(`#current--${activePlayer}`).textContent = 0;
-
-    if (activePlayer === 0) {
+    selectElement(`.player--${activePlayer}`).classList.remove(
+      'player--active'
+    );
+    selectElement(`#current--${activePlayer}`).textContent = 0;
+    if (!activePlayer) {
       finalScore0 += currentScore;
-      document.querySelector(`#score--${activePlayer}`).textContent =
-        finalScore0;
-      document.querySelector(`#current--${activePlayer}`).textContent = 0;
+      selectElement(`#score--${activePlayer}`).textContent = finalScore0;
+      selectElement(`#current--${activePlayer}`).textContent = 0;
       currentScore = 0;
-    } else {
+    }
+
+    if (activePlayer) {
       finalScore1 += currentScore;
-      document.querySelector(`#score--${activePlayer}`).textContent =
-        finalScore1;
-      document.querySelector(`#current--${activePlayer}`).textContent = 0;
+      selectElement(`#score--${activePlayer}`).textContent = finalScore1;
+      selectElement(`#current--${activePlayer}`).textContent = 0;
       currentScore = 0;
     }
   }
 
   if (finalScore0 >= 100) {
     winner(activePlayer);
-  } else if (finalScore1 >= 100) {
+  }
+
+  if (finalScore1 >= 100) {
     winner(activePlayer);
   }
 
-  activePlayer = activePlayer === 0 ? 1 : 0;
-  document
-    .querySelector(`.player--${activePlayer}`)
-    .classList.add('player--active');
+  activePlayer = activePlayer ? 0 : 1;
+  selectElement(`.player--${activePlayer}`).classList.add('player--active');
 });
